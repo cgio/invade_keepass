@@ -2,8 +2,6 @@
 
 invade_keepass is a proof of concept for extracting passwords and other sensitive information from a running KeePass process in Windows. KeePass is a popular and free password manager that runs locally. KeePass is said to have [strong security](https://keepass.info/features.html), including "Process Memory Protection" and "protected in-memory streams." However, these protections are circumvented by invade_keepass. In fairness, most local processes can be compromised in some way with sufficient access. Real-world use of invade_keepass against KeePass is unlikely, as a keylogger would be an effective and less advanced approach.
 
-For educational use at your own risk.
-
 ## Background
 
 KeePass provides users with the ability to copy password data to the clipboard using its interface or Ctrl+C. When this occurs, the sensitive data stored in the entry (user name, password, entry title, notes, etc.) become temporarily accessible in memory, then flushed soon after. To intercept this data, clr.dll's MarshalNative::CopyToNative function is detoured by shellcode injected into the KeePass process by invade_keepass. This shellcode saves two pointers in specific memory locations. One pointer is for the entry's password data. The other pointer is for the entry's other data. Externally, these pointers are periodically read by invade_keepass. invade_keepass is then able to format and display the sensitive information in plaintext. Keep in mind that invade_keepass can only access sensitive entry information on a "one at a time" basis as the user copies KeePass entry passwords.
@@ -37,4 +35,4 @@ This project is not affiliated with KeeFarce and uses a different technique.
 * **Chad Gosselin** - [https://github.com/cgio](https://github.com/cgio)
 
 ## License
-This project is licensed under the MIT License. See [LICENSE.md](LICENSE.md) for details.
+This project is licensed under the MIT License. See [LICENSE.md](LICENSE.md) for details. This project is for educational purposes only. Use at your own risk.
