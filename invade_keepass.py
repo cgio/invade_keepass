@@ -183,8 +183,7 @@ print(f'Pointer to entry info: '
 print(f'Pointer to entry password: '
       f'{hex(target_entry_address_pointer_password)}')
 
-while True:
-    # TODO - fix bug when looping fast when program is closed
+while target.is_active:
     try:
         target_entry_address_password = tool.memory_read_pointers(
             target.process_handle,
