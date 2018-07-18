@@ -13,7 +13,7 @@ This project is not affiliated with KeeFarce and uses a different technique.
 ## Requirements
 
 * [Python 3.6+](https://www.python.org/downloads/)
-* [Invade](https://github.com/cgio/invade), a Windows memory toolkit for Python (`pip install invade`)
+* [Invade](https://github.com/cgio/invade), a Python library for interacting with Windows process memory (`pip install invade`)
 * [KeePass 2.36](https://sourceforge.net/projects/keepass/files/KeePass%202.x/2.36/) (newer versions are not supported for safety reasons - see [KeePass security issues](https://keepass.info/help/kb/sec_issues.html))
 * [x64dbg](https://x64dbg.com) is not required but recommended for experimentation
 * [Multiline Ultimate Assembler](https://rammichael.com/multimate-assembler), an x64dbg plugin, is not required but recommended for experimentation
